@@ -32,9 +32,7 @@ class Comb(object):
 
         zipped = []
         need = []
-        # data
-        # for key, value in data.items():
-        #    data[key] = value.replace('(', '######').replace(')', '$$$$$$').replace('\'', '')
+
         for key, value in self.data['var'].items():
             zipped.append(['"' + key + '":"' + str(i) + '"' for i in value])
         if len(zipped) != 1:

@@ -138,9 +138,9 @@ class Create(object):
 
                 # 配置接口断言
                 for i in process['assert']:
-                    if content_respone not in assert_info:
-                        if 'respone' in i['value']:
-                            assert_info += content_respone
+                    if content_response not in assert_info:
+                        if 'response' in i['value']:
+                            assert_info += content_response
                     assert_info += content_process_assert.format(i['value'], i['info'])
                 if is_inherit and function_id not in content_case_function:
                     assert_info = assert_info.replace('@#$', '[\'' + function_id + '\']')

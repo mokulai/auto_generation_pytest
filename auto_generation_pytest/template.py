@@ -41,7 +41,7 @@ content_data = '''
 
 content_function = '''	def test_{}(self,{}):\n'''
 
-content_respone = '''		respone = r.json()\n'''
+content_response = '''		respone = r.json()\n'''
 
 content_process_assert = '''		assert({}), u"{}"
 '''

@@ -4,10 +4,10 @@ from auto_generation_pytest.combination.combination_case import Comb
 def combination_requeset(d, case):
     if 'url' in d and d['url'] != '':
         req = '''\t\tr = HttpRequest().send(\'{}\', \'{}\', {}, {}, url=\'{}\')\n'''.format(
-            d['name'], d['method'], case, d['head'], d['url'])
+            d['api'], d['method'], case, d['head'], d['url'])
     else:
         req = '''\t\tr = HttpRequest().send(\'{}\', \'{}\', {}, {})\n'''.format(
-            d['name'], d['method'], case, d['head'])
+            d['api'], d['method'], case, d['head'])
     return req.replace('{', '##+##').replace('}', '##-##')
 
 

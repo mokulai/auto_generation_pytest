@@ -89,8 +89,8 @@ def recursion_inherit(data, case, base, name, data_name=None):
                             load += '[\'{}\']'.format(x)
 
                     assert (check_api_name == case['api']), '需要继承的接口和取值的接口名称不同'
-                    if content_respone not in content:
-                        content += content_respone
+                    if content_response not in content:
+                        content += content_response
                     content += '''\t\t{}['{}']['{}'] = respone{} \n'''.format(function_data, name, need_inherit_key, load)
 
             for process_key, process_value in inherit['process'].items():
