@@ -1,0 +1,284 @@
+{
+    "TestDetail": {
+        "name": "/api/test-detail",
+        "url": "",
+        "feature": "demo接口",
+        "method": "post",
+        "head": "{'Content-Type': 'application/json','Authorization':cookie}",
+        "process": {
+            "TestCase1": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "page": {"asdf": 1}
+                        },
+                        "var": {
+                            "test": [
+                                "a","b"
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi.1.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "打卡结果获取失败"
+                    }
+                ]
+            },
+            "TestCase2": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "page": 1
+                        },
+                        "var": {
+                            "test": [
+                                "a","b"
+                            ],
+                            "test2": [
+                                "a","b"
+                            ]
+                        },
+                        "comb": "allpairs"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi2",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi2.1.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "打卡结果获取失败"
+                    }
+                ]
+            },
+            "TestCase3": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "page": 1
+                        },
+                        "var": {
+                            "test": [
+                                "a","b"
+                            ]
+                        },
+                        "comb": "random"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi.1.demo"
+                        }
+                    },
+                    {
+                        "api": "TestApi3",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi3.1.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "打卡结果获取失败"
+                    }
+                ]
+            }
+        }
+    },
+    "TestApi": {
+        "name": "/api/test-api1",
+        "url": "",
+        "feature": "demo接口",
+        "method": "get",
+        "head": "{'Content-Type': 'application/json','Authorization':cookie}",
+        "process": {
+            "Case": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": null,
+                        "var": {
+                            "demo_1": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ]
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": null,
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "打卡结果获取失败"
+                    }
+                ]
+            }
+        }
+    },
+    "TestApi2": {
+        "name": "/api/test-api2",
+        "url": "",
+        "feature": "demo接口",
+        "method": "get",
+        "head": "{'Content-Type': 'application/json','Authorization':cookie}",
+        "process": {
+            "Case": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": null,
+                "case": [
+                    {
+                        "data": null,
+                        "var": {
+                            "demo_2": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ]
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi.0.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "打卡结果获取失败"
+                    }
+                ]
+            }
+        }
+    },
+    "TestApi3": {
+        "name": "/api/test-detail2",
+        "url": "",
+        "feature": "demo接口",
+        "method": "get",
+        "head": "{'Content-Type': 'application/json','Authorization':cookie}",
+        "process": {
+            "Case": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": null,
+                "case": [
+                    {
+                        "data": null,
+                        "var": {
+                            "demo_1": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ],
+                                [
+                                    "2019/10/09",
+                                    "2019/10/09"
+                                ]
+                            ],
+                            "demo_2": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ],
+                                [
+                                    "2019/10/09",
+                                    "2019/10/09"
+                                ]
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": null,
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "打卡结果获取失败"
+                    }
+                ]
+            }
+        }
+    }
+}
