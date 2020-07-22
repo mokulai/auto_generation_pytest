@@ -2,7 +2,7 @@
 '''
 @summary:   初始化CaseData实例，获取测试用例
 @usage: 
-            from utlis.get_case import CaseData
+            from auto_generation_pytest.get_case import CaseData
             CaseData().get_data('log')
 ''' 
 

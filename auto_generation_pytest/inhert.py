@@ -1,7 +1,7 @@
 
-from utlis.template import *
-from utlis.combination import *
-from utlis.utlis import comb_data, combination_requeset
+from auto_generation_pytest.template import *
+from auto_generation_pytest.combination import *
+from auto_generation_pytest.utlis import comb_data, combination_requeset
 
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv(), override=True)

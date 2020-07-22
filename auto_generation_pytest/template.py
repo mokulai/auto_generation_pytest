@@ -14,8 +14,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 #添加当前文件目录
 sys.path.append(os.path.dirname(__file__))
 
-from utlis.httprequests import HttpRequest
-from utlis.getcase import *
+from auto_generation_pytest.httprequests import HttpRequest
+from auto_generation_pytest.get_case import *
 from assert_fuction import *
 from hook import *
 

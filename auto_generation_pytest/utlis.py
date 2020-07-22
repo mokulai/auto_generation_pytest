@@ -1,4 +1,4 @@
-from utlis.combination.combination_case import Comb
+from auto_generation_pytest.combination.combination_case import Comb
 
 
 def combination_requeset(d, case):
