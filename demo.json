@@ -226,7 +226,7 @@
         }
     },
     "TestApi3": {
-        "api": "/api/test-detail2",
+        "api": "/api/test-api3",
         "url": "",
         "feature": "demo接口",
         "method": "get",
