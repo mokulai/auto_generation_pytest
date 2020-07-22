@@ -1,7 +1,7 @@
 {
     "TestDetail": {
         "api": "/api/test-detail",
-        "feature": "demo接口",
+        "feature": "demo接口1",
         "method": "post",
         "head": "{'Content-Type': 'application/json'}",
         "process": {
