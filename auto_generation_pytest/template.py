@@ -5,6 +5,7 @@ import csv
 import time 
 import json
 import allure
+import grpc
 import pytest
 import pytest_dependency
 import sys

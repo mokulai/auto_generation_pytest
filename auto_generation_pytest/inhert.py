@@ -20,7 +20,9 @@ def recursion_inherit(data, case, base, name, data_name=None):
         inherit = data[case['api']]
         api_name = name[:name.index('_')]
         inherit_process_name = case['api'] + '_' + case['process']
-
+        if inherit_process_name in base[0]:
+            num = list(base[0].keys()).count(inherit_process_name)
+            inherit_process_name += str(num)
         if inherit['process'] == "":
 
             content += '''		inherit_respone = {}(cookie).send().json() \n'''.format(case['api'])
@@ -45,25 +47,22 @@ def recursion_inherit(data, case, base, name, data_name=None):
                 # 如果有流程，而且没给出具体要的数据，说明是完全依赖上一个接口返回的数据的，需要获取依赖接口的全部数据，作为用例数据
 
                 value = comb_data(inherit['process'][case['process']]['case'])
-
+                         
                 if data_name is not None and data_name == name:
-
                     inherit_data = all_case_and_singel_inhert(inherit_process_name, value, name, base)
                 else:
                     inherit_data = all_case_and_loop_inhert(inherit_process_name, value, base)
 
                 content += combination_requeset(data[case['api']], function_data+'[\''+ inherit_process_name + '\']')
-
                 is_inherit = True
 
             else:
-
                 if data_name is not None and data_name == name:
                     inherit_data = singel_case_and_singel_inhert(inherit_process_name, case['case'], name, base)
                 else:
                     inherit_data = singel_case_and_loop_inhert(inherit_process_name, case['case'], base)
+                content += combination_requeset(data[case['api']], function_data+'[\''+ inherit_process_name + '\']')
 
-                content += '''		r = {}(cookie,case).send() \n'''.format(case['api'])
                 is_inherit = True
 
 
@@ -73,6 +72,8 @@ def recursion_inherit(data, case, base, name, data_name=None):
 
                     if 'respone' in i['value'] and 'respone = r.json()' not in content:
                         content += content_respone
+                    
+                    i['value'] = i['value'].replace('{', '##+##').replace('}', '##-##')
                     content += content_process_assert.format(i['value'], i['info'])
 
             # 继承接口需要指定的值

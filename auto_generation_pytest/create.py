@@ -47,14 +47,14 @@ class Create(object):
         self.add_file('./hook/', True)
 
     def save_case(self):
-
         with open(self.pyfilepath, 'w') as f:
             f.writelines(self.last_content)
+        with open('./testcase/conftest.py', 'w') as f:
+            f.writelines('')
         with open(self.pydatapath, 'w') as f:
             f.writelines(json.dumps(self.class_data_all, indent=4, ensure_ascii=False))
 
     def run(self):
-
         for test_class, value in self.data.items():
             # 生成当前接口的测试类
             content = content_class
@@ -78,6 +78,7 @@ class Create(object):
 
                 # 按照进程中的case设置，生成测试用例数据
                 self.class_data_all[test_class][test_function] = comb_data(process['case'])
+                #print(self.class_data_all)
                 # 组合测试函数
 
                 function_name = str.lower(test_class + '_' + test_function)
@@ -134,6 +135,7 @@ class Create(object):
                             function_data + '[\'' + function_id + '\']')
 
                         content += content_case_function
+
                 assert_info += combination_requeset(value, function_data)
 
                 # 配置接口断言
@@ -146,15 +148,23 @@ class Create(object):
                     assert_info = assert_info.replace('@#$', '[\'' + function_id + '\']')
                 else:
                     assert_info = assert_info.replace('@#$', '')
+                assert_info = assert_info.replace('{', '##+##').replace('}', '##-##')
+
                 content += str(assert_info)
 
+                
             # 补充feature和class信息
+           
+            #print(test_class)
+            #content = content.replace('\n','***&****')
+            #print(content)
             content = str(content).format(value['feature'], test_class)
             content = content.replace('##+##', '{').replace('##-##', '}')
-
+            
             self.last_content += content
 
         self.last_content = self.content_base_import + self.last_content
+        
         self.save_case()
 
 

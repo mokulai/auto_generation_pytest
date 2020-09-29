@@ -1,7 +1,13 @@
 from auto_generation_pytest.combination.combination_case import Comb
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
 
+def grpc_request_format(d, case):
+    req = '''\t\treq = BaseRpc(\'{}\', \'{}\')\n\t\tr = req.send(\'{}\',\'{}\',{})\n'''.format(d['pod'], rootPath+d['proto'], d['server'], d['request'], case)
+    return req.replace('{', '##+##').replace('}', '##-##')
 
-def combination_requeset(d, case):
+def http_request_format(d, case):
     if 'url' in d and d['url'] != '':
         req = '''\t\tr = HttpRequest().send(\'{}\', \'{}\', {}, {}, url=\'{}\')\n'''.format(
             d['api'], d['method'], case, d['head'], d['url'])
@@ -10,6 +16,11 @@ def combination_requeset(d, case):
             d['api'], d['method'], case, d['head'])
     return req.replace('{', '##+##').replace('}', '##-##')
 
+def combination_requeset(d, case):
+    if d['method'] == 'grpc':
+        return grpc_request_format(d, case)
+    else:
+        return http_request_format(d, case)
 
 def comb_data(data):
     output = []

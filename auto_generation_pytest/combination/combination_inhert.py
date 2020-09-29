@@ -1,11 +1,18 @@
 def all_case_and_singel_inhert(key1, value1, key2, value2):
     a = []
-    for i in value1:
-        for j in value2:
+    if key2 in value2[0]:
+        for i in value1:
             item = {}
             item[key1] = i
-            item[key2] = j
-            a.append(item)
+            for j in value2:
+                a.append({**item, **j})
+    else:
+        for i in value1:
+            for j in value2:
+                item = {}
+                item[key1] = i
+                item[key2] = j
+                a.append(item)
     return a
 
 
