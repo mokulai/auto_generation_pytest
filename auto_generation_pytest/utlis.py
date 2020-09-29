@@ -4,7 +4,7 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 
 def grpc_request_format(d, case):
-    req = '''\t\treq = BaseRpc(\'{}\', \'{}\')\n\t\tr = req.send(\'{}\',\'{}\',{})\n'''.format(d['pod'], rootPath+d['proto'], d['server'], d['request'], case)
+    req = '''\t\treq = BaseRpc(\'{}\', \'{}\')\n\t\tr = req.send(\'{}\',\'{}\',{})\n'''.format(d['url'], rootPath+d['proto'], d['server'], d['request'], case)
     return req.replace('{', '##+##').replace('}', '##-##')
 
 def http_request_format(d, case):

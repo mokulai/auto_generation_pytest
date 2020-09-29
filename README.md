@@ -5,6 +5,7 @@
 
 基本配置和使用方式参考demo
 
+http接口：
 ```
 {pytest_class_name}: {
         "name": {接口路由},
@@ -43,6 +44,46 @@
 
 ```
 
+grpc接口：
+```
+{pytest_class_name}: {
+        "url": {接口路由},
+        "proto": {proto文件地址},
+        "server": {server名称},
+        "request": {request名称},
+        "feature": {allure feature}
+        "method": "grpc"
+        "process": {
+            {用例分类}: {
+                "skip": false,
+                "fixture": [
+                    {pytest fixture}
+                ],
+                "hooks": [
+                    {参数传递前的处理函数}
+                ],
+                "case": [
+                    {
+                        "data": {静态变量},
+                        "var": {动态变量},
+                        "comb": { multiply | normal | multiply }
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": {继承的class},
+                        "process": {该class的process},
+                        "case": {可指定具体的参数},
+                        "data": {继承值},
+                    }
+                ],
+                "severity": {allure 用例级别},
+                "story": {allure 用例说明},
+                "assert": {断言配置}
+            }
+    }
+
+```
 # 具体字段说明
 
 ## process
