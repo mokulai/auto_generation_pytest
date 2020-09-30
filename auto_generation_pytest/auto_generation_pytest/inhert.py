@@ -1,6 +1,6 @@
 
-from auto_generation_pytest.template import *
-from auto_generation_pytest.combination import *
+from auto_generation_pytest.template import content_response, content_process_assert
+from auto_generation_pytest.combination.combination_inhert import singel_case_and_singel_inhert, all_case_and_singel_inhert, all_case_and_loop_inhert, singel_case_and_loop_inhert
 from auto_generation_pytest.utlis import comb_data, combination_requeset
 
 from dotenv import find_dotenv, load_dotenv
@@ -18,14 +18,13 @@ def recursion_inherit(data, case, base, name, data_name=None):
         content = ''
         inherit_data = {}
         inherit = data[case['api']]
-        api_name = name[:name.index('_')]
         inherit_process_name = case['api'] + '_' + case['process']
         if inherit_process_name in base[0]:
             num = list(base[0].keys()).count(inherit_process_name)
             inherit_process_name += str(num)
         if inherit['process'] == "":
 
-            content += '''		inherit_respone = {}(cookie).send().json() \n'''.format(case['api'])
+            content += '''		inherit_response = {}(cookie).send().json() \n'''.format(case['api'])
         else:
 
             assert (case['api'] + case[
@@ -70,8 +69,8 @@ def recursion_inherit(data, case, base, name, data_name=None):
             if 'skip' in inherit['process'][case['process']] and bool(inherit['process'][case['process']]):
                 for i in inherit['process'][case['process']]['assert']:
 
-                    if 'respone' in i['value'] and 'respone = r.json()' not in content:
-                        content += content_respone
+                    if 'response' in i['value'] and 'response = r.json()' not in content:
+                        content += content_response
                     
                     i['value'] = i['value'].replace('{', '##+##').replace('}', '##-##')
                     content += content_process_assert.format(i['value'], i['info'])
@@ -86,13 +85,13 @@ def recursion_inherit(data, case, base, name, data_name=None):
                         try:
                             x = int(x)
                             load += '[{}]'.format(x)
-                        except Exception as e:
+                        except Exception :
                             load += '[\'{}\']'.format(x)
 
                     assert (check_api_name == case['api']), '需要继承的接口和取值的接口名称不同'
                     if content_response not in content:
                         content += content_response
-                    content += '''\t\t{}['{}']['{}'] = respone{} \n'''.format(function_data, name, need_inherit_key, load)
+                    content += '''\t\t{}['{}']['{}'] = response{} \n'''.format(function_data, name, need_inherit_key, load)
 
             for process_key, process_value in inherit['process'].items():
                 if process_value['inherit'] is not None and process_key == case['process']:

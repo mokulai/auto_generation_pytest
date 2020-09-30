@@ -14,7 +14,7 @@ class Create(object):
         self.pyfilepath = './testcase/test_' + name + '.py'
         self.last_content = ''
         self.class_data_all = {}
-        self.content_base_import = content_base_import.format(name)
+        self.content_base_import = content_base_import
         self.data = self.load_josn(name)
         self.init_file()
 
@@ -47,15 +47,21 @@ class Create(object):
         self.add_file('./hook/', True)
 
     def save_case(self):
+        init_host = 'HOST=127.0.0.1\nGRPCOX=127.0.0.1:6969'
         with open(self.pyfilepath, 'w') as f:
             f.writelines(self.last_content)
         with open('./testcase/conftest.py', 'w') as f:
             f.writelines('')
+        with open('.env', 'w') as f:
+            f.writelines(init_host)
         with open(self.pydatapath, 'w') as f:
             f.writelines(json.dumps(self.class_data_all, indent=4, ensure_ascii=False))
 
     def run(self):
+        req_type = 'http'
         for test_class, value in self.data.items():
+            if value['method'] == 'grpc':
+                req_type = 'grpc'
             # 生成当前接口的测试类
             content = content_class
             # 初始化当前接口测试类的测试数据
@@ -63,7 +69,6 @@ class Create(object):
                 self.class_data_all[test_class] = {}
 
             assert (value['process'] != ''), '接口' + test_class + '没有配置process'
-            change_num = 0
 
             # 按照process数量生成具体测试方法
             for test_function, process in value['process'].items():
@@ -78,9 +83,8 @@ class Create(object):
 
                 # 按照进程中的case设置，生成测试用例数据
                 self.class_data_all[test_class][test_function] = comb_data(process['case'])
-                #print(self.class_data_all)
-                # 组合测试函数
 
+                # 组合测试函数
                 function_name = str.lower(test_class + '_' + test_function)
                 function_id = test_class + '_' + test_function
                 function_data = function_name + '_data'
@@ -107,7 +111,9 @@ class Create(object):
                         if 'skip' in self.data[i['api']]['process'][i['process']] and \
                                 self.data[i['api']]['process'][i['process']]['skip'] is not None:
                             if not self.data[i['api']]['process'][i['process']]['skip']:
-                                inherit_content_all += content_dependency.format('Test' + i['api'], b)
+                                dependency = content_dependency.format('Test' + i['api'], b)
+                                if dependency not in inherit_content_all:
+                                    inherit_content_all += dependency
 
                     content += inherit_content_all
 
@@ -135,13 +141,12 @@ class Create(object):
                             function_data + '[\'' + function_id + '\']')
 
                         content += content_case_function
-
                 assert_info += combination_requeset(value, function_data)
 
                 # 配置接口断言
                 for i in process['assert']:
                     if content_response not in assert_info:
-                        if 'response' in i['value']:
+                        if 'respone' in i['value']:
                             assert_info += content_response
                     assert_info += content_process_assert.format(i['value'], i['info'])
                 if is_inherit and function_id not in content_case_function:
@@ -154,15 +159,14 @@ class Create(object):
 
                 
             # 补充feature和class信息
-           
-            #print(test_class)
-            #content = content.replace('\n','***&****')
-            #print(content)
             content = str(content).format(value['feature'], test_class)
             content = content.replace('##+##', '{').replace('##-##', '}')
             
             self.last_content += content
-
+        if req_type == 'grpc':
+            self.content_base_import += grpc_import
+        elif req_type == 'http':
+            self.content_base_import += http_import
         self.last_content = self.content_base_import + self.last_content
         
         self.save_case()

@@ -9,12 +9,13 @@
 import os
 import json
 import sys
-sys.path.append('../')
+
 class CaseData(object):
 
     def __init__(self):
         #读取用例文件数据
-        self.path = os.path.dirname(os.path.dirname(__file__))+'/data/'
+        self.path = os.getcwd()+'/data/'
+        
 
     def get_data(self, data, name):
         with open(self.path+data, 'r') as f:
@@ -25,4 +26,3 @@ class CaseData(object):
             item = item[i]
         return item
 
-#print(CaseData().get_data('demo.json','TestDetail_TestCase1'))

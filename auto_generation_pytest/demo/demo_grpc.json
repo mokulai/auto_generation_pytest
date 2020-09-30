@@ -1,11 +1,11 @@
 {
     "TestUac": {
-        "pod": "uac",
-        "proto": "/pb2/uac",
-        "feature": "uac模块 grpc 测试",
+        "url": "ip:50051",
+        "proto": "/pb2/hello2",
+        "feature": "hello2模块 grpc 测试",
         "method": "grpc",
-        "server": "app.UacApiRpc",
-        "request":"RegisterByYiYe",
+        "server": "hello2.Greeter",
+        "request":"SayHello",
         "process": {
             "TestCase": {
                 "skip": false,
@@ -77,7 +77,7 @@
         }
     },
     "TestHello": {
-        "pod": "ip:50052",
+        "url": "ip:50052",
         "proto": "/pb2/hello",
         "feature": "hello模块 grpc 测试",
         "method": "grpc",
