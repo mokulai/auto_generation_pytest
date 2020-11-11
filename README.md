@@ -18,7 +18,7 @@
 pip3 install auto_generation_pytest
 ```
 
-# cli命令说明
+## cli命令说明
 - init：初始化项目，同时生成demo文件，当前目录下已经存在的文件不会重复生成
 - make：根据配置生成pytest代码
 - run：直接按照配置进行接口测试，同pytest可以使用 :: 分割指定用例，如 mat run demo.json::test::test
@@ -109,7 +109,7 @@ grpc接口：
 - normal: 每一个参数都需要为list，且数据长度必须一致，会按照下标对动态数据一一组合
 - multiply: 对动态数据进行笛卡尔积
 
-### 接口配置方式优化
+## 接口配置方式优化
 
 除了直接把process下的每一个场景配置和接口信息配置在同一个场景外，可以使用如下方式优化：
 ```
