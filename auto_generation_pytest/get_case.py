@@ -12,9 +12,12 @@ import sys
 
 class CaseData(object):
 
-    def __init__(self):
+    def __init__(self, path=None):
         #读取用例文件数据
-        self.path = os.getcwd()+'/data/'
+        if path:
+            self.path = os.getcwd()+'/'
+        else:
+            self.path = os.getcwd()+'/data/'
         
 
     def get_data(self, data, name):

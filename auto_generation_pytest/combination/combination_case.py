@@ -6,7 +6,8 @@ class Comb(object):
     def __init__(self, data):
         self.data = data
         self.var_type = []
-        self.save_type(data['var'])
+        if data['var'] is not None:
+            self.save_type(data['var'])
 
     def save_type(self, data):
         for i, j in data.items():
@@ -73,8 +74,10 @@ class Comb(object):
             for key, value in i.items():
                 if key in self.var_type:
                     i[key] = eval(value)
-            if data['data']:
+            if data['data'] and isinstance(data['data'],dict):
                 i = dict(i, **self.data['data'])
+            elif data['data'] and not isinstance(data['data'],dict):
+                print('存在data数据不为dict的情况')
             need.append(i)
 
         return need

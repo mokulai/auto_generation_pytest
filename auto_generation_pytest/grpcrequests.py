@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import importlib
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv(), override=True)
 
@@ -8,7 +9,8 @@ class BaseRpc(object):
 
     def __init__(self, host, path):
         self.host = host
-        self.url = os.environ.get('GRPCOX')
+        self.url = str(os.environ.get('GRPCOX'))
+        assert(self.url is not None), 'grpcox服务地址未配置'
         url = self.url + "/server/"+self.host+"/services"
         proto_list = self.find_proto(path)
         querystring = {"restart":"0"}
@@ -31,5 +33,14 @@ class BaseRpc(object):
         url = self.url + "/server/"+self.host+"/function/"+services+"."+request+"/invoke"
         message = json.dumps(message)
         response = requests.request("POST", url, data=message, headers=headers)
-        data = response.json()
-        return data['data']['result']
+        format_grpc = str(os.environ.get('GRPCOX_FROMAT'))
+        if format_grpc:
+            path = format_grpc.split('.')
+            funciton = importlib.import_module('.'.join(path[:-1]))
+            try:
+                response = getattr(funciton, path[-1])(response)
+            except:
+                print(response.text)
+        elif format_grpc == 'json':
+            response = response.json()
+        return response
