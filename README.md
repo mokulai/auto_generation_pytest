@@ -11,7 +11,8 @@
 3. 后面了解到了httprunner，在实际使用的时候偶尔会遇到一些问题，或者自己有特殊的需求时改造别人的代码成本较高
 4. 业务中遇到的一些接口需要能对参数进行组合，希望这个参数组合和发起调用两个过程可以一起执行
 
-# 安装方式
+
+## 安装方式
 
 ```
 pip3 install auto_generation_pytest
@@ -22,9 +23,6 @@ pip3 install auto_generation_pytest
 - make：根据配置生成pytest代码
 - run：直接按照配置进行接口测试，同pytest可以使用 :: 分割指定用例，如 mat run demo.json::test::test
 
-# 参数说明
-
-该工具需要配置较多参数，以下是参数配置说明
 
 ## 环境变量配置说明
 
