@@ -3,7 +3,7 @@ from auto_generation_pytest.template import content_process_assert
 from auto_generation_pytest.combination.combination_inhert import singel_case_and_singel_inhert, all_case_and_singel_inhert, all_case_and_loop_inhert, singel_case_and_loop_inhert
 from auto_generation_pytest.utlis import comb_data, combination_requeset
 from dotenv import find_dotenv, load_dotenv
-from utlis import load_josn, set_config
+from utlis import load_josn, set_config, r_json
 load_dotenv(find_dotenv(), override=True)
 
 is_inheri = False
@@ -29,6 +29,20 @@ def recursion_inherit(data, case, base, name, data_name=None, c=None):
         if inherit['process'] == "":
             print('inherit process不可为空')
         else:
+            
+            if 'case' in case:
+                case_data = case['case']
+            elif 'body' in case:
+                case_data = case['body']
+            else:
+                raise ValueError('process 下必须包含body/case')
+
+            if 'case' in by_inherit:
+                by_inherit_data = comb_data(by_inherit['case'])
+            elif 'body' in by_inherit:
+                by_inherit_data = [by_inherit['body']]
+            else:
+                raise ValueError('process 下必须包含body/case')
 
             assert (case['api'] + case[
                 'process'] != test_class + test_function), test_class + '接口的' + test_function + '不能继承自己的流程'
@@ -42,25 +56,23 @@ def recursion_inherit(data, case, base, name, data_name=None, c=None):
 
                     content += content_case_function
 
-            if case['case'] is None:
+            if case_data is None:
 
                 # 如果有流程，而且没给出具体要的数据，说明是完全依赖上一个接口返回的数据的，需要获取依赖接口的全部数据，作为用例数据
 
-                value = comb_data(by_inherit['case'])
-                         
                 if data_name is not None and data_name == name:
-                    inherit_data = all_case_and_singel_inhert(inherit_process_name, value, name, base)
+                    inherit_data = all_case_and_singel_inhert(inherit_process_name, by_inherit_data, name, base)
                 else:
-                    inherit_data = all_case_and_loop_inhert(inherit_process_name, value, base)
+                    inherit_data = all_case_and_loop_inhert(inherit_process_name, by_inherit_data, base)
 
                 content += combination_requeset(data[case['api']], function_data+'[\''+ inherit_process_name + '\']')
                 is_inherit = True
 
             else:
                 if data_name is not None and data_name == name:
-                    inherit_data = singel_case_and_singel_inhert(inherit_process_name, case['case'], name, base)
+                    inherit_data = singel_case_and_singel_inhert(inherit_process_name, case_data, name, base)
                 else:
-                    inherit_data = singel_case_and_loop_inhert(inherit_process_name, case['case'], base)
+                    inherit_data = singel_case_and_loop_inhert(inherit_process_name, case_data, base)
                 content += combination_requeset(data[case['api']], function_data+'[\''+ inherit_process_name + '\']')
 
                 is_inherit = True
@@ -78,13 +90,7 @@ def recursion_inherit(data, case, base, name, data_name=None, c=None):
                     inherit_value_list = need_inherit_value.split('.')
                     check_api_name = inherit_value_list[0]
                     load = ''
-                    for x in inherit_value_list[1:]:
-                        try:
-                            x = int(x)
-                            load += '[{}]'.format(x)
-                        except Exception :
-                            load += '[\'{}\']'.format(x)
-
+                    load = r_json('', inherit_value_list[1:])
                     assert (check_api_name == case['api']), '需要继承的接口和取值的接口名称不同'
                     content += '''\t\t{}['{}']['{}'] = r{} \n'''.format(function_data, name, need_inherit_key, load)
 

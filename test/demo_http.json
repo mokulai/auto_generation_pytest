@@ -1,0 +1,281 @@
+{
+    "TestDetail": {
+        "api": "/api/test-detail",
+        "feature": "demo接口1",
+        "method": "post",
+        "head": "{'Content-Type': 'application/json'}",
+        "process": {
+            "TestCase1": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "page": {"demo": 1}
+                        },
+                        "var": {
+                            "test": [
+                                "a","b"
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi.1.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "assert_check(response)",
+                        "info": "接口调用失败"
+                    }
+                ]
+            },
+            "TestCase2": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "page": 1
+                        },
+                        "var": {
+                            "test": [
+                                "a","b"
+                            ],
+                            "test2": [
+                                "a","b"
+                            ]
+                        },
+                        "comb": "allpairs"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi2",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi2.1.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "接口调用失败"
+                    }
+                ]
+            },
+            "TestCase3": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "page": 1
+                        },
+                        "var": {
+                            "test": [
+                                "a","b"
+                            ]
+                        },
+                        "comb": "random"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi.1.demo"
+                        }
+                    },
+                    {
+                        "api": "TestApi3",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi3.1.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "接口调用失败"
+                    }
+                ]
+            }
+        }
+    },
+    "TestApi": {
+        "api": "/api/test-api1",
+        "feature": "demo接口",
+        "method": "get",
+        "head": "{'Content-Type': 'application/json'}",
+        "process": {
+            "Case": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": null,
+                        "var": {
+                            "demo_1": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ]
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": null,
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "接口调用失败"
+                    }
+                ]
+            }
+        }
+    },
+    "TestApi2": {
+        "api": "/api/test-api2",
+        "feature": "demo接口",
+        "method": "get",
+        "head": "{'Content-Type': 'application/json'}",
+        "process": {
+            "Case": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": null,
+                "case": [
+                    {
+                        "data": null,
+                        "var": {
+                            "demo_2": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ]
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestApi",
+                        "process": "Case",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestApi.0.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "接口调用失败"
+                    }
+                ]
+            }
+        }
+    },
+    "TestApi3": {
+        "api": "/api/test-api3",
+        "url": "",
+        "feature": "demo接口",
+        "method": "get",
+        "head": "{'Content-Type': 'application/json'}",
+        "process": {
+            "Case": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": null,
+                "case": [
+                    {
+                        "data": null,
+                        "var": {
+                            "demo_1": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ],
+                                [
+                                    "2019/10/09",
+                                    "2019/10/09"
+                                ]
+                            ],
+                            "demo_2": [
+                                [
+                                    "2019/10/08",
+                                    "2019/10/08"
+                                ],
+                                [
+                                    "2019/10/09",
+                                    "2019/10/09"
+                                ]
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": null,
+                "severity": "p0",
+                "story": "demo测试",
+                "assert": [
+                    {
+                        "value": "r.status_code == 200",
+                        "info": "接口调用失败"
+                    }
+                ]
+            }
+        }
+    }
+}

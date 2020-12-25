@@ -3,6 +3,7 @@ import requests
 import json
 import importlib
 from dotenv import find_dotenv, load_dotenv
+from auto_generation_pytest.utlis import get_extract,set_extract
 load_dotenv(find_dotenv(), override=True)
 
 class BaseRpc(object):
@@ -31,6 +32,9 @@ class BaseRpc(object):
             'Content-Type': "application/json"
         }
         url = self.url + "/server/"+self.host+"/function/"+services+"."+request+"/invoke"
+        for k,v in message.items():
+            if '$' in v:
+                message[k] = get_extract(v.replace('$',''))
         message = json.dumps(message)
         response = requests.request("POST", url, data=message, headers=headers)
         format_grpc = str(os.environ.get('GRPCOX_FROMAT'))

@@ -6,7 +6,9 @@ import pytest
 
 from auto_generation_pytest.create import Create
 from shutil import copyfile
-from utlis import add_file, init_py, load_josn
+from utlis import add_file, init_py, load_josn, set_env
+from auto_generation_pytest.proxy import dump
+
 
 #from auto_generation_pytest import __description__
 
@@ -20,13 +22,21 @@ def make_init():
     copyfile(os.path.join(path, 'demo_grpc.json'),os.path.join(demo_folder, 'demo_grpc.json'))
     copyfile(os.path.join(path, 'demo_http.json'),os.path.join(demo_folder, 'demo_http.json'))
 
+def proxy(args):
+    dump.start()
+    return 1
+
 def make_pytest_file(args):
     if '::' not in args[0]:
         Create(args[0]).make_pytest().save_case()
     return 0
 
 def run(args):
-    Create(args[0]).make_pytest().run()
+
+    if len(args) > 1:
+        Create(args[0]).make_pytest().run(args[1:])
+    else:
+        Create(args[0]).make_pytest().run()
     return 0
 
 def main():
@@ -38,12 +48,13 @@ def main():
     parser_init = subparsers.add_parser('init', help="Make init file")
     parser_run = subparsers.add_parser('run', help="Running testcase with JSON")
     parser_create = subparsers.add_parser('create', help="Make pytest file")
+    parser_proxy = subparsers.add_parser('proxy', help="Make pytest file")
 
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
         
-    elif len(sys.argv) == 2 and sys.argv[1] != 'init':
+    elif len(sys.argv) == 2 and sys.argv[1] not in  ['init','proxy']:
         if sys.argv[1] in ["-V", "--version"]:
             print(f"{__version__}")
         elif sys.argv[1] == "run":
@@ -53,17 +64,21 @@ def main():
         sys.exit(0)
 
     extra_args = []
-    if len(sys.argv) >= 2 and sys.argv[1] in ["run", "create"]:
+    if len(sys.argv) >= 2 and sys.argv[1] in ["run", "create", "proxy"]:
         args, extra_args = parser.parse_known_args()
     else:
         args = parser.parse_args()
-
     if sys.argv[1] == "run":
+        set_env()
         sys.exit(run(extra_args))
     elif sys.argv[1] == "init":
         sys.exit(make_init())
     elif sys.argv[1] == "create":
+        set_env()
         sys.exit(make_pytest_file(extra_args))
+    elif sys.argv[1] == "proxy":
+        set_env()
+        sys.exit(proxy(extra_args))
 
 
 

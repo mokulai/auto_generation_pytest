@@ -3,6 +3,7 @@ import requests
 import json
 import importlib
 from dotenv import find_dotenv, load_dotenv
+from auto_generation_pytest.utlis import get_extract,set_extract
 load_dotenv(find_dotenv(), override=True)
 
 
@@ -10,6 +11,7 @@ class HttpRequest(object):
 
     def __init__(self):
         self.session = requests.session()
+        self.session.keep_alive = False
         self.header = {}
         self.timeout = 60
         self.url = os.environ.get('HOST')
@@ -24,10 +26,10 @@ class HttpRequest(object):
     def get(self, api ,data):
         response = None
         try:
-            response = self.session.get(self.url + api, params=data, headers=self.header, timeout=self.timeout)
+            response = self.session.get(api, params=data, headers=self.header, timeout=self.timeout)
             response.raise_for_status()
         except Exception as e:
-            print("HTTP请求异常，异常信息：%s" % str(e))
+            print("HTTP请求异常，异常信息：%s \n" % str(e))
         if self.format == 'json':
             response = response.json()
         elif '.' in self.format:
@@ -38,21 +40,33 @@ class HttpRequest(object):
         response = None
         data = json.dumps(data)
         try:
-            response = self.session.post(self.url + api, data=data, headers=self.header, timeout=self.timeout)
+            response = self.session.post(api, data=data, headers=self.header, timeout=self.timeout)
             response.raise_for_status()
         except Exception as e:
-            print("HTTP请求异常，异常信息：%s" % str(e))
+            print("HTTP请求异常，异常信息：%s \n" % str(e))
         if self.format == 'json':
-            response = response.json()
+            try:
+                response = response.json()
+            except Exception as e :
+                print("返回结果格式化失败：%s \n" % str(response.text))
         elif '.' in self.format:
-            response = self.res_format(response)
+            try:
+                response = self.res_format(response)
+            except Exception as e :
+                print("返回结果格式化失败：%s \n" % str(response.text))
         return response
 
-    def req(self, api, method, data, header, url=None):
+    def send(self, api, method, data, header, url=None):
         if url:
             self.url = url
         self.header = header
-        r = getattr(self, method)(self.url + '/' + api, data)
+        for k,v in data.items():
+            if '$' in str(v):
+                data[k] = get_extract(v.replace('$',''))
+        method = str.lower(method)
+        if not self.url:
+            raise ValueError('未配置环境变量HOST')
+        r = getattr(self, method)(self.url + api, data)
         return r
 
     

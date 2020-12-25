@@ -1,7 +1,10 @@
 from auto_generation_pytest.combination.combination_case import Comb
+from auto_generation_pytest.get_case import CaseData
 import os
 import json
 import random
+from proxy.res_filter import filter_response
+from jsondiff import diff
 import string
 
 def grpc_request_format(d, case):
@@ -81,3 +84,61 @@ def set_config(config, data):
             data = data.replace('"'+random_str,'').replace(random_str+'"','')
     data = json.loads(data)
     return data
+
+def r_json(load,data):
+    for x in data:
+        try:
+            x = int(x)
+            load += '[{}]'.format(x)
+        except Exception :
+            load += '[\'{}\']'.format(x)
+    return load
+
+def get_extract(key):
+    v = os.getenv(key)
+    t = os.getenv(key+'-type')
+    if t:
+        t = str(t).replace('<class \'','').replace('\'>','')
+        v = eval(str(t)+'('+str(v)+')')
+    return v
+
+def set_extract(key, value):
+    os.environ[key] = str(value)
+    key += '-type'
+    t = type(value)
+    os.environ[key] = str(t)
+
+def response_diff(name, index, url, method, new):
+    old = CaseData().get_record(name + '_record.json', index)
+    info_init = "old: " + str(old) + '\n' + 'new: ' + str(new) + '\ndiff: '
+    new = filter_response(url,method,new)
+
+    info = str(diff(new, old))
+    if info == '{}':
+        info = ''
+    else:
+        info = info_init + info
+    return info
+
+
+def find_num(name):
+    path = os.getcwd()+'/' + name + '/' + name + '_record.json'
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            data = json.load(f)
+            n = next(reversed(data['TestCase']))
+            num = int(n.split('_')[1])+1
+    else:
+        num = 0
+    return num
+
+
+def set_env():
+    path = os.getcwd()+'/.env'
+    env = {}
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            for i in f:
+                if "=" in i:
+                    key, value = i.split("=")
+                    os.environ[key] = value.strip()

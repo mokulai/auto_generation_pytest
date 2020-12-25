@@ -11,18 +11,22 @@
 3. 后面了解到了httprunner，在实际使用的时候偶尔会遇到一些问题，或者自己有特殊的需求时改造别人的代码成本较高
 4. 业务中遇到的一些接口需要能对参数进行组合，希望这个参数组合和发起调用两个过程可以一起执行
 
-
-## 安装方式
+# 安装方式
 
 ```
 pip3 install auto_generation_pytest
 ```
 
-## cli命令说明
+# cli命令说明
 - init：初始化项目，同时生成demo文件，当前目录下已经存在的文件不会重复生成
 - make：根据配置生成pytest代码
 - run：直接按照配置进行接口测试，同pytest可以使用 :: 分割指定用例，如 mat run demo.json::test::test
+- proxy：开启接口抓包，通过配置PROXY_HOST，RECORD_NAME，PROXY_PORT，FILTER_FILE可以实时抓包生成符合本框架的json文件
 
+
+# 参数说明
+
+该工具需要配置较多参数，以下是参数配置说明
 
 ## 环境变量配置说明
 
@@ -109,7 +113,7 @@ grpc接口：
 - normal: 每一个参数都需要为list，且数据长度必须一致，会按照下标对动态数据一一组合
 - multiply: 对动态数据进行笛卡尔积
 
-## 接口配置方式优化
+### 接口配置方式优化
 
 除了直接把process下的每一个场景配置和接口信息配置在同一个场景外，可以使用如下方式优化：
 ```
@@ -129,3 +133,28 @@ grpc接口：
 }
 ```
 配置**path**参数后，json数据会从配置的路径进行加载，并和dict里的其他数值进行组合
+
+## 抓包
+
+使用mitmproxy作为抓包工具，所以在使用时需要配置mitm证书
+
+抓取的数据包可以进行过滤，demo如下：
+```
+filter_headers: 
+   - 'Content-Type'
+   - 'User-Agent'
+   - 'Cookie'
+
+filter_requests:
+ - api: /api/news
+   method: get
+   need: # 你需要的字段
+      - message
+      - code
+
+ - api: /api/authentication/login
+   method: post
+   miss: # 你不需要的字段
+      - nickname
+      - code
+```

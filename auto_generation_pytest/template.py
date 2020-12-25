@@ -7,11 +7,10 @@ import pytest_dependency
 import os
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv(), override=True)
-
+from auto_generation_pytest.utlis import set_extract, response_diff
 from auto_generation_pytest.get_case import CaseData
 from assert_function.assert_function import *
 from hook.hook import *
-
 
 '''
 
@@ -39,8 +38,6 @@ content_data = '''
 	@allure.severity('{}')
 	@pytest.mark.dependency(name="{}::{}")
 '''
-
-content_function = '''	def test_{}(self,{}):\n'''
 
 content_response = '''		respone = r.json()\n'''
 

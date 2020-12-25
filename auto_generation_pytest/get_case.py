@@ -25,7 +25,14 @@ class CaseData(object):
             data = json.load(f)
         item = data.copy()
         for i in name.split('_', 1):
-            print(i)
             item = item[i]
+        return item
+
+    def get_record(self, data, name):
+        with open(self.path+data, 'r') as f:
+            data = json.load(f)
+        item = data.copy()
+        for i in name.split('_', 0):
+            item = item[i]['Sucess'][0]
         return item
 

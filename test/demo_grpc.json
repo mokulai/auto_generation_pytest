@@ -1,0 +1,124 @@
+{
+    "TestUac": {
+        "url": "ip:50051",
+        "proto": "/pb2/hello2",
+        "feature": "hello2模块 grpc 测试",
+        "method": "grpc",
+        "server": "hello2.Greeter",
+        "request":"SayHello",
+        "process": {
+            "TestCase": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "mobile": "13590287541",
+                            "area_code": "+86",
+                            "app_id": "wxfeeba0ece1c9b010",
+                            "open_id": "oKKg76eSJPihZ_HJmwI8t8T8F3xU",
+                            "create_by": 20,
+                            "cmd_time": 20
+                        },
+                        "var": {
+                            "request_message": [
+                                {
+                                    "ip": "Hello",
+                                    "device": "Hello",
+                                    "platform": "Hello"
+                                },
+                                {
+                                    "ip": "Hello2",
+                                    "device": "Hello2",
+                                    "platform": "Hello2"
+                                }
+                            ]
+                        },
+                        "comb": "allpairs"
+                    }
+                ],
+                "inherit": [
+                    {
+                        "api": "TestHello",
+                        "process": "TestCase",
+                        "case": {
+                            "name": "api1",
+                            "requestHeight": {
+                                "height": "api1"
+                            }
+                        },
+                        "data": {
+                            "demo_3": "TestHello.1.demo"
+                        }
+                    },
+                    {
+                        "api": "TestHello",
+                        "process": "TestCase",
+                        "case": null,
+                        "data": {
+                            "demo_3": "TestHello.2.demo"
+                        }
+                    }
+                ],
+                "severity": "p0",
+                "story": "uac测试",
+                "assert": [
+                    {
+                        "value": "r.strip() == '{ \"message\": \"Hello, 1!\"}'",
+                        "info": "返回错误"
+                    }
+                ]
+            }
+        }
+    },
+    "TestHello": {
+        "url": "ip:50052",
+        "proto": "/pb2/hello",
+        "feature": "hello模块 grpc 测试",
+        "method": "grpc",
+        "server": "hello.Greeter",
+        "request":"SayHello",
+        "process": {
+            "TestCase": {
+                "skip": false,
+                "fixture": [
+                    "cookie"
+                ],
+                "hooks": [
+                    "transform"
+                ],
+                "case": [
+                    {
+                        "data": {
+                            "requestHeight":{
+                                "height":"1"
+                            }
+                        },
+                        "var": {
+                            "name": [
+                                "1",
+                                "2",
+                                "3"
+                            ]
+                        },
+                        "comb": "multiply"
+                    }
+                ],
+                "inherit": null,
+                "severity": "p0",
+                "story": "hello测试",
+                "assert": [
+                    {
+                        "value": "r.strip() == '{\"message\": \"Hello, 1!\"}'",
+                        "info": "返回错误"
+                    }
+                ]
+            }
+        }
+    }
+}

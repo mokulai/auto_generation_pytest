@@ -9,15 +9,17 @@ import string
 from auto_generation_pytest.utlis import combination_requeset, comb_data
 from auto_generation_pytest.template import *
 from auto_generation_pytest.inhert import recursion_inherit
-from utlis import add_file, init_py, load_josn, set_config
+from auto_generation_pytest.utlis import add_file, init_py, load_josn, set_config, r_json, set_extract
 from tempfile import NamedTemporaryFile,TemporaryDirectory
 
 class Create(object):
     def __init__(self, name):
-        self.set_env()
         self.path = os.path.dirname(__file__) + '/'
         self.case = ''
         self.config = ''
+        self.record_describe = ''
+        self.record = False
+        self.record_name = ''
         self.find_name(name)
         self.last_content = ''
         self.class_data_all = {}
@@ -31,16 +33,6 @@ class Create(object):
        if not os.path.exists(path):
             with open(path, 'w') as f:
                 f.writelines(data)
-
-    def set_env(self):
-        path = os.getcwd()+'/.env'
-        env = {}
-        if os.path.exists(path):
-            with open(path, "r") as f:
-                for i in f:
-                    if "=" in i:
-                        key, value = i.split("=")
-                        os.environ[key] = value.strip()
 
     def make_pytest_line(self, name):
         name_list = name.split('::')
@@ -77,13 +69,16 @@ class Create(object):
         if 'json' in path:
             ctx = load_josn(path)
             if 'Config' in ctx:
+                if 'record' in ctx['Config']:
+                    self.record = ctx['Config']['record']
+                    self.record_describe = ctx['Config']['describe']
+                    self.record_name = ctx['Config']['name']
                 self.config = sorted(ctx['Config'].items(),key = lambda x:len(x[0]),reverse=True)
                 self.data = set_config(self.config, ctx['TestCase'])
             else:
                 self.data = ctx
         else:
             print('没有发现json文件')
-
 
     def init_file(self):
         init_host = 'HOST=127.0.0.1\nGRPCOX=127.0.0.1:6969'
@@ -108,7 +103,7 @@ class Create(object):
         with open(self.pydatapath, 'w') as f:
             f.writelines(json.dumps(self.class_data_all, indent=4, ensure_ascii=False))
 
-    def run(self):
+    def run(self, item=None):
         plan_list = ['-v','-s']
         init_py('./', 'conftest')
         with NamedTemporaryFile('w+t',suffix='.json',dir=os.getcwd()) as f:
@@ -123,6 +118,9 @@ class Create(object):
                 py.seek(0)
                 name = py.name+self.case
                 plan_list.append(name)
+                if item:
+                    for i in item:
+                        plan_list.append(i)
                 pytest.main(plan_list)
 
     def make_pytest(self):
@@ -157,17 +155,29 @@ class Create(object):
 
                 # 判断当前方法是否存在继承数据，如果存在继承数据则需要在调用测试数据时指定调用的接口
                 is_inherit = False
-
-                # 按照进程中的case设置，生成测试用例数据
-                self.class_data_all[test_class][test_function] = comb_data(process['case'])
-
+                    
                 # 组合测试函数
                 function_name = str.lower(test_class + '_' + test_function)
                 function_id = test_class + '_' + test_function
                 function_data = function_name + '_data'
-                content += content_data.format(self.path_data, function_id, function_data, process['story'],
+
+                # 按照进程中的case设置，生成测试用例数据
+                q = ''
+                if 'case' in process:
+                    if self.record:
+                        raise ValueError('record模式下，process里不能使用 case')
+                    self.class_data_all[test_class][test_function] = comb_data(process['case'])
+                    content += content_data.format(self.path_data, function_id, function_data, process['story'],
                                                process['severity'],
                                                'Test' + test_class, 'test_' + function_name)
+                elif 'body' in process:
+                    q = str(process['body']).replace('{', '##+##').replace('}', '##-##')
+                    if process['story']:
+                        content += f"\n\t@allure.story(u'{process['story']}')"
+                    self.class_data_all[test_class][test_function] = [process['body']]
+                    content += '\n'
+                else:
+                    raise ValueError('process 下必须包含body/case')
 
                 # 当存在继承时，进行继承的数据组合
                 if 'inherit' in process and process['inherit'] is not None:
@@ -193,7 +203,10 @@ class Create(object):
                     content += inherit_content_all
 
                 # 组合fixture
-                function = content_function.format(function_name, function_data)
+                if q == '':
+                    function = f'\tdef test_{function_name}(self,{function_data}):\n'
+                else:
+                    function = f'\tdef test_{function_name}(self):\n' + f'\t\t{function_data} = {q}\n'
 
                 if 'fixture' in process and process['fixture'] is not None:
                     fixture_index = function.index('self') + 4
@@ -201,6 +214,7 @@ class Create(object):
                     fixture = ','.join(process['fixture'])
                     function = function.format(fixture)
                     fixture = ','.join(process['fixture'])
+
                 content += function
                 content += function_body
 
@@ -208,8 +222,7 @@ class Create(object):
                 assert_info = '''		#开始进行被测接口的测试\n'''
                 
 
-                if 'hooks' in process and process['hooks'] is not None:
-
+                if 'hooks' in process and process['hooks'] is not None and process['hooks'] != '':
                     content += '''		#对待测数据进行处理\n'''
                     for xx in process['hooks']:
                         content_case_function = '''		{} = {}({})\n'''
@@ -221,14 +234,26 @@ class Create(object):
                         else:
                             content_case_function = content_case_function.format(function_data, xx, function_data)
                             assert_info += '''		{} = {}\n'''.format('req', function_data)
+                        if ')(' in content_case_function:
+                            content_case_function = content_case_function.replace(')(',',')
                         content += content_case_function
                 else:
                     content += '''		{} = {}\n'''.format('req', function_data)
-                assert_info += combination_requeset(value, function_data)
+
+                if 'fixheader' in process and process['fixheader'] is not None and process['fixheader'] != '':
+                    header = value.copy()
+                    for i,j in process['fixheader'].items():
+                        a,b = j.split(' -> ')
+                        s = '\''+ i + '\':' + str(a)
+                        n = '\''+ i + '\':' + str(b)
+                        header['head'] = header['head'].replace(s,n)
+                    assert_info += combination_requeset(header, function_data)
+                else:
+                    assert_info += combination_requeset(value, function_data)
 
                 # 配置接口断言
                 for i in process['assert']:
-                    assert_info += content_process_assert.format(i['value'], i['info']) + "+str(r)\n"
+                    assert_info += content_process_assert.format(i['value'], i['info']) + "\"+str(r)\n"
                 if is_inherit and function_id not in content_case_function:
                     assert_info = assert_info.replace('@#$', '[\'' + function_id + '\']')
                 else:
@@ -237,12 +262,26 @@ class Create(object):
 
                 content += str(assert_info)
 
+                if 'extract' in process and process['extract'] is not None and process['extract'] != '':
+                    for k,v in process['extract'].items():
+                        v = r_json('',v.split('.')[1:])
+                        extract = f"\t\tset_extract('{k}',r{v})\n"
+                        content += str(extract)
+
             # 补充feature和class信息
-            content = str(content).format(value['feature'], test_class)
-            content = content.replace('##+##', '{').replace('##-##', '}')
+            if not self.record:
+                content = str(content).format(value['feature'], test_class)
+            else:
+                content = content.replace('{', '##+##').replace('}', '##-##')
 
             self.last_content += content
+
+        self.last_content = self.last_content.replace('##+##', '{').replace('##-##', '}')
         
+        if self.record:
+            self.last_content = self.last_content.replace(content_class,'')
+            self.last_content = content_class.format(self.record_describe, self.record_name) + self.last_content
+
         # 组合pytest代码
         if self.req_type == 'grpc':
             req = grpc_import
